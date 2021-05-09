@@ -14,23 +14,7 @@ use Excel;
 
 class Controller extends BaseController
 {
-    private $excel;
-
-    public function __construct(Excel $excel)
-    {
-        $this->excel = $excel;
-    }
     
-    public function exportViaConstructorInjection()
-    {
-        return $this->excel->download(new UsersExport, 'users.xlsx');
-    }
-    
-    public function exportViaMethodInjection(Excel $excel)
-    {
-        return $excel->download(new UsersExport, 'users.xlsx');
-    }
-
     public function show()
     {
     	// $result = DB::select("SELECT * FROM `tbl_details` WHERE `is_deleted` = 0");
@@ -81,40 +65,4 @@ class Controller extends BaseController
             }
     }
 
-public function exportCsv(Request $request)
-{
-   $fileName = 'tasks.csv';
-   $tasks = Task::all();
-        $headers = array(
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$fileName",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        );
-
-        $columns = array('Id', 'Title', 'Body');
-
-        $callback = function() use($tasks, $columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
-
-            foreach ($tasks as $task) {
-                $row['Id']  = $task->id;
-                $row['Title']    = $task->title;
-                $row['Body']    = $task->body;
-
-                fputcsv($file, array($row['Id'], $row['Title'], $row['DesBodycription']));
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
-
-    public function export() 
-    {
-        return Excel::download(new UsersExport, 'users.xlsx');
-    }
 }
